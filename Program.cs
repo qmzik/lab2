@@ -29,7 +29,7 @@ namespace lab2
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Console.WriteLine("Введите два числа");
+                    Console.WriteLine("Введите команду и два числа");
                     continue;
                 }
                 catch (FormatException)
@@ -40,7 +40,6 @@ namespace lab2
                 
                 switch (receivedCommands[0])
                 {
-                    // Сложение рациональных чисел
                     case Commands.Add:
                         result = first.Add(second);
                         break;
