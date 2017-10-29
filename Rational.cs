@@ -68,47 +68,52 @@ namespace lab2
             }
         }
         
-        public Rational Add(Rational c)
+        public static Rational operator +(Rational x, Rational y)
         {
             Rational result = new Rational();
-            if (Denominator != c.Denominator)
+            if (y.Denominator != x.Denominator)
             {
-                int cDenominator = c.Denominator;
-                c.Denominator *= cDenominator;
-                c.Numerator *= Denominator;
-                Denominator *= cDenominator;
-                Numerator *= cDenominator;
-                result.Denominator = Denominator;
+                int cDenominator = x.Denominator;
+                x.Denominator *= cDenominator;
+                x.Numerator *= y.Denominator;
+                y.Denominator *= cDenominator;
+                y.Numerator *= cDenominator;
+                result.Denominator = y.Denominator;
             }
             else
             {
-                result.Denominator = Denominator;
+                result.Denominator = y.Denominator;
             }
-            result.Numerator = Numerator + c.Numerator;
+            result.Numerator = y.Numerator + x.Numerator;
             result.Even();
             return result;
         }
 
-        public Rational Multiply(Rational x)
+        public static Rational operator *(Rational x, Rational y)
         {
             Rational result = new Rational();
-            result.Denominator = x.Denominator * Denominator;
-            result.Numerator = x.Numerator * Numerator;
+            result.Denominator = x.Denominator * y.Denominator;
+            result.Numerator = x.Numerator *y. Numerator;
             result.Even();
             return result;
         }
 
-        public Rational DivideBy(Rational x)
+        public static Rational operator /(Rational x, Rational y)
         {
             Rational result = new Rational();
-            result.Numerator = Numerator * x.Denominator;
-            result.Denominator = Denominator * x.Numerator;
+            result.Numerator = x.Numerator * y.Denominator;
+            result.Denominator = x.Denominator * y.Numerator;
             result.Even();
             return result;
+        }
+
+        public static Rational operator -(Rational x, Rational y)
+        {
+            return x + y.Negate();
         }
         
         // рациональное число с противоположным знаком
-        public Rational Negate()
+        private Rational Negate()
         {
             Rational negate = new Rational();
             negate.Numerator = 0 - Numerator;
@@ -129,6 +134,20 @@ namespace lab2
             var divider = getBiggestDivider(Numerator, Denominator);
             Numerator /= divider;
             Denominator /= divider;
+        }
+
+        public static implicit operator Rational(int x)
+        {
+            return new Rational
+            {
+                Numerator = x,
+                Denominator = x
+            };
+        }
+
+        public static implicit operator int(Rational x)
+        {
+            return x.Base;
         }
     }
 }

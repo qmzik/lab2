@@ -41,19 +41,19 @@ namespace lab2
                 switch (receivedCommands[0])
                 {
                     case Commands.Add:
-                        result = first.Add(second);
+                        result = first + second;
                         break;
                     
                     case Commands.Sub:
-                        result = first.Add(second.Negate());
+                        result = first - second;
                         break;
                         
                     case Commands.Mul:
-                        result = first.Multiply(second);
+                        result = first * second;
                         break;
                         
                     case Commands.Div:
-                        result = first.DivideBy(second);
+                        result = first / second;
                         break;
                     default:
                         Console.WriteLine("Вы ввели некоректную команду");
