@@ -25,13 +25,15 @@ namespace lab2
 
         public override string ToString()
         {
-            int rightNum = Numerator;
+            int rightNum = Math.Abs(Numerator);
             while (rightNum >= Denominator)
             {
                 rightNum -= Denominator;
             }
 
-            return Base + "." + (rightNum == 0 ? "" : rightNum + ":" + Denominator);
+            string sign = Numerator < 0 ? "-" : "";
+            
+            return sign + Math.Abs(Base) + "." + (rightNum == 0 ? "" : rightNum + ":" + Denominator);
         }
 
         public static bool TryParse(string input, out Rational result)
@@ -57,12 +59,13 @@ namespace lab2
             try
             {
                 int z = int.Parse(stringZ);
+                int sign = z >= 0 ? 1 : -1;
                 result.Denominator = int.Parse(fraction[1]);
-                result.Numerator = z * result.Denominator + int.Parse(fraction[0]);
+                result.Numerator = z * result.Denominator + sign * int.Parse(fraction[0]);
                 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -93,7 +96,7 @@ namespace lab2
         {
             Rational result = new Rational();
             result.Denominator = x.Denominator * y.Denominator;
-            result.Numerator = x.Numerator *y. Numerator;
+            result.Numerator = x.Numerator * y. Numerator;
             result.Even();
             return result;
         }
@@ -136,7 +139,7 @@ namespace lab2
             Denominator /= divider;
         }
 
-        public static implicit operator Rational(int x)
+        public static explicit operator Rational(int x)
         {
             return new Rational
             {
@@ -145,7 +148,7 @@ namespace lab2
             };
         }
 
-        public static implicit operator int(Rational x)
+        public static explicit operator int(Rational x)
         {
             return x.Base;
         }
