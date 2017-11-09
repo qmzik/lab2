@@ -42,7 +42,7 @@ namespace lab2
             string[] fullNumber = input.Split('.');
             string stringZ, stringFraction;
 
-            // Есть ли целая часть
+            // Если нет целой части
             if (fullNumber[0] == input)
             {
                 stringZ = "0";
@@ -59,9 +59,22 @@ namespace lab2
             try
             {
                 int z = int.Parse(stringZ);
+                int numerator = int.Parse(fraction[0]);
+                int denumerator = int.Parse(fraction[1]);
                 int sign = z >= 0 ? 1 : -1;
-                result.Denominator = int.Parse(fraction[1]);
-                result.Numerator = z * result.Denominator + sign * int.Parse(fraction[0]);
+                
+                if (sign == -1 && (denumerator < 0 || numerator < 0))
+                {
+                    throw new FormatException();
+                }
+                
+                if (denumerator < 0 && numerator < 0)
+                {
+                    throw new FormatException();
+                }
+                
+                result.Denominator = denumerator;
+                result.Numerator = z * denumerator + sign * numerator;
                 
                 return true;
             }
