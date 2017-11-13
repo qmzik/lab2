@@ -8,15 +8,15 @@ namespace lab2
     internal class Program
     {
         public static void Main(string[] args)
-        {   
+        {
             while (true)
             {
                 string commandString = Console.ReadLine();
-                string[] receivedCommands = commandString.ToLower().Split(' ');
+                var separator = new[] {' '};
+                string[] receivedCommands = commandString.Trim().ToLower().Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
-                Rational first = new Rational();
-                Rational second = new Rational();
-                Rational result = new Rational();
+                Rational first;
+                Rational second;
 
                 try
                 {
@@ -24,43 +24,59 @@ namespace lab2
                     bool isSecondCorrect = Rational.TryParse(receivedCommands[2], out second);
                     if (!isFirstCorrect || !isSecondCorrect)
                     {
-                        throw new FormatException();
+                        throw new RationalOperationException(RationalOperationException.FormatExceptionMessage);
                     }
                 }
-                catch (IndexOutOfRangeException)
+
+                catch (OverflowException)
                 {
-                    Console.WriteLine("Введите команду и два числа");
-                    continue;
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Нужно ввести <число>.<число>:<число> <число>.<число>:<число> " +
-                                      "с одним минусом у числа");
+                    Console.WriteLine("Введено слишком большое число! Попробуйте меньше, чем " +
+                                      int.MaxValue);
                     continue;
                 }
                 
-                switch (receivedCommands[0])
+                catch (IndexOutOfRangeException)
                 {
-                    case Commands.Add:
-                        result = first + second;
-                        break;
-                    
-                    case Commands.Sub:
-                        result = first - second;
-                        break;
-                        
-                    case Commands.Mul:
-                        result = first * second;
-                        break;
-                        
-                    case Commands.Div:
-                        result = first / second;
-                        break;
-                    default:
-                        Console.WriteLine("Вы ввели некоректную команду");
-                        break;
+                    Console.WriteLine(RationalOperationException.FormatExceptionMessage);
+                    continue;
                 }
-                Console.WriteLine(result);
+
+                catch (RationalOperationException e)
+                {
+                    Console.WriteLine(e.Message);
+                    continue;
+                }
+
+                try
+                {
+                    Rational result = new Rational();
+                    switch (receivedCommands[0])
+                    {
+                        case Commands.Add:
+                            result = first + second;
+                            break;
+                    
+                        case Commands.Sub:
+                            result = first - second;
+                            break;
+                        
+                        case Commands.Mul:
+                            result = first * second;
+                            break;
+                        
+                        case Commands.Div:
+                            result = first / second;
+                            break;
+                        default:
+                            Console.WriteLine("Вы ввели некоректную команду");
+                            break;
+                    }
+                    Console.WriteLine(result);
+                }
+                catch (RationalOperationException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
             
         }

@@ -18,18 +18,19 @@ namespace lab2
             get { return Numerator / Denominator; }
         }
 
-        public double Fraction
+        //Z.N:D N:D
+        public Rational Fraction
         {
-            get { return (double)Numerator / (double)Denominator - Base; }
+            get { return new Rational
+            {
+                Denominator = Denominator,
+                Numerator = Numerator % Denominator
+            }; }
         }
 
         public override string ToString()
         {
-            int rightNum = Math.Abs(Numerator);
-            while (rightNum >= Denominator)
-            {
-                rightNum -= Denominator;
-            }
+            int rightNum = Math.Abs(Numerator) % Denominator;
 
             string sign = Numerator < 0 ? "-" : "";
             
@@ -42,6 +43,21 @@ namespace lab2
             string[] fullNumber = input.Split('.');
             string stringZ, stringFraction;
 
+            if (fullNumber.Length == 1 && !fullNumber[0].Contains(":"))
+            {
+                result.Denominator = 1;
+                try
+                {
+                    result.Numerator = int.Parse(fullNumber[0]);
+                }
+                catch (FormatException)
+                {
+                    throw new RationalOperationException(RationalOperationException.FormatExceptionMessage);
+                }
+
+                return true;
+            }
+            
             // Если нет целой части
             if (fullNumber[0] == input)
             {
@@ -63,14 +79,9 @@ namespace lab2
                 int denumerator = int.Parse(fraction[1]);
                 int sign = z >= 0 ? 1 : -1;
                 
-                if (sign == -1 && (denumerator < 0 || numerator < 0))
+                if (sign == -1 && numerator < 0 || denumerator < 0)
                 {
-                    throw new FormatException();
-                }
-                
-                if (denumerator < 0 && numerator < 0)
-                {
-                    throw new FormatException();
+                    throw new RationalOperationException("Ставить минус можно только в начале");
                 }
                 
                 result.Denominator = denumerator;
@@ -116,10 +127,22 @@ namespace lab2
 
         public static Rational operator /(Rational x, Rational y)
         {
+            if (y.Numerator == 0)
+            {
+                throw new RationalOperationException("Делить на ноль нельзя");
+            }
             Rational result = new Rational();
-            result.Numerator = x.Numerator * y.Denominator;
-            result.Denominator = x.Denominator * y.Numerator;
-            result.Even();
+            try
+            {
+                result.Numerator = x.Numerator * y.Denominator;
+                result.Denominator = x.Denominator * y.Numerator;
+                result.Even();
+            }
+            catch (DivideByZeroException )
+            {
+                throw new RationalOperationException("Делить на ноль нельзя");
+            }
+
             return result;
         }
 
@@ -148,8 +171,15 @@ namespace lab2
         private void Even()
         {
             var divider = getBiggestDivider(Numerator, Denominator);
-            Numerator /= divider;
-            Denominator /= divider;
+            try
+            {
+                Numerator /= divider;
+                Denominator /= divider;
+            }
+            catch (DivideByZeroException)
+            {
+                throw new RationalOperationException("Делить на ноль нельзя");
+            }
         }
 
         public static explicit operator Rational(int x)
@@ -160,7 +190,6 @@ namespace lab2
                 Denominator = x
             };
         }
-
         public static explicit operator int(Rational x)
         {
             return x.Base;
