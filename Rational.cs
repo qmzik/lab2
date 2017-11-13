@@ -21,11 +21,15 @@ namespace lab2
         //Z.N:D N:D
         public Rational Fraction
         {
-            get { return new Rational
+            get
             {
-                Denominator = Denominator,
-                Numerator = Numerator % Denominator
-            }; }
+                var fraction = new Rational
+                {
+                    Denominator = Denominator,
+                    Numerator = Numerator % Denominator
+                };
+                return fraction;
+            }
         }
 
         public override string ToString()
@@ -34,7 +38,7 @@ namespace lab2
 
             string sign = Numerator < 0 ? "-" : "";
             
-            return sign + Math.Abs(Base) + "." + (rightNum == 0 ? "" : rightNum + ":" + Denominator);
+            return sign + Math.Abs(Base) + (rightNum == 0 ? "" : "." + rightNum + ":" + Denominator);
         }
 
         public static bool TryParse(string input, out Rational result)
@@ -52,7 +56,13 @@ namespace lab2
                 }
                 catch (FormatException)
                 {
-                    throw new RationalOperationException(RationalOperationException.FormatExceptionMessage);
+                    Console.WriteLine(RationalOperationException.FormatExceptionMessage);
+                    return false;
+                }
+                catch (OverflowException)
+                {
+                    Console.WriteLine("Введено слишком большое число! Попробуйте меньше, чем " + int.MaxValue);
+                    return false;
                 }
 
                 return true;
@@ -61,7 +71,7 @@ namespace lab2
             // Если нет целой части
             if (fullNumber[0] == input)
             {
-                stringZ = "0";
+                stringZ = "+0";
                 stringFraction = input;
             }
             else
@@ -74,23 +84,31 @@ namespace lab2
 
             try
             {
+                
                 int z = int.Parse(stringZ);
                 int numerator = int.Parse(fraction[0]);
                 int denumerator = int.Parse(fraction[1]);
-                int sign = z >= 0 ? 1 : -1;
-                
-                if (sign == -1 && numerator < 0 || denumerator < 0)
+                int sign = z >= 0 && stringZ[0] != '-' ? 1 : -1;
+
+                if ((stringZ[0] != '+' ||stringZ[0] == '-') && stringFraction[0] == '-' || denumerator < 0)
                 {
-                    throw new RationalOperationException("Ставить минус можно только в начале");
+                    Console.WriteLine("Ставить минус можно только в начале");
+                    return false;
                 }
-                
+
                 result.Denominator = denumerator;
                 result.Numerator = z * denumerator + sign * numerator;
-                
+
                 return true;
             }
-            catch (Exception)
+            catch (IndexOutOfRangeException)
             {
+                Console.WriteLine(RationalOperationException.FormatExceptionMessage);
+                return false;
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine(RationalOperationException.FormatExceptionMessage);
                 return false;
             }
         }

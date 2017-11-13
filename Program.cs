@@ -13,7 +13,10 @@ namespace lab2
             {
                 string commandString = Console.ReadLine();
                 var separator = new[] {' '};
-                string[] receivedCommands = commandString.Trim().ToLower().Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                string[] receivedCommands = commandString
+                                            .Trim()
+                                            .ToLower()
+                                            .Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
                 Rational first;
                 Rational second;
@@ -24,26 +27,13 @@ namespace lab2
                     bool isSecondCorrect = Rational.TryParse(receivedCommands[2], out second);
                     if (!isFirstCorrect || !isSecondCorrect)
                     {
-                        throw new RationalOperationException(RationalOperationException.FormatExceptionMessage);
+                        continue;
                     }
                 }
 
-                catch (OverflowException)
-                {
-                    Console.WriteLine("Введено слишком большое число! Попробуйте меньше, чем " +
-                                      int.MaxValue);
-                    continue;
-                }
-                
                 catch (IndexOutOfRangeException)
                 {
                     Console.WriteLine(RationalOperationException.FormatExceptionMessage);
-                    continue;
-                }
-
-                catch (RationalOperationException e)
-                {
-                    Console.WriteLine(e.Message);
                     continue;
                 }
 
