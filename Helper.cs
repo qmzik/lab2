@@ -7,14 +7,21 @@ namespace lab2
     {
         public static void GetHelp()
         {
-            var result = "";
-            var reader = new StreamReader("Help.txt");
-            while (!reader.EndOfStream)
+            try
             {
-                result += reader.ReadLine() + "\n";
+                var result = "";
+                var reader = new StreamReader("Help.txt");
+                while (!reader.EndOfStream)
+                {
+                    result += reader.ReadLine() + "\n";
+                }
+                reader.Close();
+                Console.Write(result);
             }
-            reader.Close();
-            Console.Write(result);
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("Файл с помощью не найден");
+            }
         }
     }
 }

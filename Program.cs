@@ -13,10 +13,13 @@ namespace lab2
             {
                 string commandString = Console.ReadLine();
                 var separator = new[] {' '};
-                string[] receivedCommands = commandString
-                                            .Trim()
-                                            .ToLower()
-                                            .Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                commandString = commandString.Trim().ToLower();
+                if (commandString == "help")
+                {
+                    Helper.GetHelp();
+                    continue;
+                }
+                string[] receivedCommands = commandString.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
                 Rational first;
                 Rational second;
