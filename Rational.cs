@@ -93,13 +93,13 @@ namespace lab2
 
             try
             {
-                
+
                 int z = int.Parse(stringZ);
                 int numerator = int.Parse(fraction[0]);
                 int denumerator = int.Parse(fraction[1]);
                 int sign = z >= 0 && stringZ[0] != '-' ? 1 : -1;
 
-                if ((stringZ[0] != '+' ||stringZ[0] == '-') && stringFraction[0] == '-' || denumerator < 0)
+                if ((stringZ[0] != '+' || stringZ[0] == '-') && stringFraction[0] == '-' || denumerator < 0)
                 {
                     Console.WriteLine("Ставить минус можно только в начале");
                     return false;
@@ -118,6 +118,11 @@ namespace lab2
             catch (FormatException)
             {
                 Console.WriteLine(RationalOperationException.FormatExceptionMessage);
+                return false;
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("Целая часть, числитель и знаменатель не должны быть больше чем " + int.MaxValue);
                 return false;
             }
         }

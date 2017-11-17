@@ -10,7 +10,7 @@ namespace lab2
         public static void Main(string[] args)
         {
             while (true)
-            {
+            {   Console.Write("Вводите: ");
                 string commandString = Console.ReadLine();
                 var separator = new[] {' '};
                 commandString = commandString.Trim().ToLower();
