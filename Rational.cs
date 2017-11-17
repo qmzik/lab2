@@ -12,7 +12,7 @@ namespace lab2
         public int Numerator { get; set; }
 
         public int Denominator { get; set; }
-
+        
         public int Base
         {
             get { return Numerator / Denominator; }
@@ -34,7 +34,16 @@ namespace lab2
 
         public override string ToString()
         {
-            int rightNum = Math.Abs(Numerator) % Denominator;
+            int rightNum;
+            try
+            {
+                rightNum = Math.Abs(Numerator) % Denominator;
+            }
+            catch (DivideByZeroException)
+            {
+                throw new RationalOperationException("Делить на ноль нельзя");
+                
+            }
 
             string sign = Numerator < 0 ? "-" : "";
             

@@ -62,7 +62,7 @@ namespace lab2
                             break;
                         default:
                             Console.WriteLine("Вы ввели некоректную команду");
-                            break;
+                            continue;
                     }
                     Console.WriteLine(result);
                 }

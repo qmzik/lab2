@@ -5,7 +5,7 @@ namespace lab2
     public class RationalOperationException : Exception
     {
         public const string FormatExceptionMessage = 
-        "Вы ввели числа в неверном формате!\n" +
+        "Вы ввели данные в неверном формате!\n" +
         "Доступные форматы ввода:\n" +
         "<команда> <число>.<число>:<число> <число>.<число>:<число>\n" +
         "<команда> <число>:<число> <число>:<число>\n" +
