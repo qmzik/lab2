@@ -46,8 +46,10 @@ namespace lab2
             }
 
             string sign = Numerator < 0 ? "-" : "";
+            int z = Math.Abs(Base);
+            string dot = (z == 0 && rightNum == 0) || (z != 0 && rightNum != 0) ? "." : "";
             
-            return sign + Math.Abs(Base) + (rightNum == 0 ? "" : "." + rightNum + ":" + Denominator);
+            return sign + (z == 0 ? "" : z.ToString()) + dot + (rightNum == 0 ? "" : rightNum + ":" + Denominator);
         }
 
         public static bool TryParse(string input, out Rational result)
@@ -55,7 +57,8 @@ namespace lab2
             result = new Rational();
             string[] fullNumber = input.Split('.');
             string stringZ, stringFraction;
-
+            
+            // если ввели целое число
             if (fullNumber.Length == 1 && !fullNumber[0].Contains(":"))
             {
                 result.Denominator = 1;

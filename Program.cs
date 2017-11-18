@@ -9,6 +9,7 @@ namespace lab2
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("Введите help для помощи");
             while (true)
             {   Console.Write("Вводите: ");
                 string commandString = Console.ReadLine();
