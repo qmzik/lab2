@@ -45,11 +45,13 @@ namespace lab2
                 
             }
 
-            string sign = Numerator < 0 ? "-" : "";
             int z = Math.Abs(Base);
-            string dot = (z == 0 && rightNum == 0) || (z != 0 && rightNum != 0) ? "." : "";
-            
-            return sign + (z == 0 ? "" : z.ToString()) + dot + (rightNum == 0 ? "" : rightNum + ":" + Denominator);
+            string sign = Numerator < 0 ? "-" : "";
+            string dot = rightNum == 0 || z == 0 && rightNum != 0 ? "" : ".";
+            string outBase = z == 0 && rightNum != 0 ? "" : z.ToString;
+            string outFraction = rightNum == 0 ? "" : rightNum + ":" + Denominator;
+
+            return sign + outBase + dot + outFraction;
         }
 
         public static bool TryParse(string input, out Rational result)
