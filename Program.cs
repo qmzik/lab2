@@ -9,7 +9,7 @@ namespace lab2
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Введите help для помощи");
+            Console.WriteLine("Введите help для помощи, exit для выхода");
             while (true)
             {   Console.Write("Вводите: ");
                 string commandString = Console.ReadLine();
@@ -20,7 +20,19 @@ namespace lab2
                     Helper.GetHelp();
                     continue;
                 }
+
+                if (commandString == "exit")
+                {
+                    break;
+                }
+                
                 string[] receivedCommands = commandString.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+                if (receivedCommands.Length != 3)
+                {
+                    Console.WriteLine("Неверный формат ввода, введите <команда> <рациональное число> <рациональное число>");
+                    continue;
+                }
 
                 Rational first;
                 Rational second;
@@ -29,15 +41,30 @@ namespace lab2
                 {
                     bool isFirstCorrect = Rational.TryParse(receivedCommands[1], out first);
                     bool isSecondCorrect = Rational.TryParse(receivedCommands[2], out second);
-                    if (!isFirstCorrect || !isSecondCorrect)
+                    if (!isFirstCorrect && !isSecondCorrect)
                     {
+                        Console.WriteLine("Числа введенены в неверном формате, уточните формат ввода командой help");
+                        continue;
+                    }
+                    
+                    if (!isFirstCorrect)
+                    {
+                        Console.WriteLine("Число " + receivedCommands[1] +
+                                          " введенено в неверном формате, уточните формат ввода командой help");
+                        continue;
+                    }
+
+                    if (!isSecondCorrect)
+                    {
+                        Console.WriteLine("Число " + receivedCommands[2] +
+                                          " введенено в неверном формате, уточните формат ввода командой help");
                         continue;
                     }
                 }
 
                 catch (IndexOutOfRangeException)
                 {
-                    Console.WriteLine(RationalOperationException.FormatExceptionMessage);
+                    Console.WriteLine("Неверный формат ввода, введите <команда> <рациональное число> <рациональное число>");
                     continue;
                 }
 

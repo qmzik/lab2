@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Policy;
 using System.Xml.Schema;
 
@@ -18,7 +19,6 @@ namespace lab2
             get { return Numerator / Denominator; }
         }
 
-        //Z.N:D N:D
         public Rational Fraction
         {
             get
@@ -47,8 +47,14 @@ namespace lab2
 
             int z = Math.Abs(Base);
             string sign = Numerator < 0 ? "-" : "";
-            string dot = rightNum == 0 || z == 0 && rightNum != 0 ? "" : ".";
-            string outBase = z == 0 && rightNum != 0 ? "" : z.ToString;
+            
+            // ставим точку только в случае "Z.N:M"
+            string dot = z != 0 && rightNum != 0 ? "." : "";
+            
+            // не выводим целую часть только в случае "N:M"
+            string outBase = z == 0 && rightNum != 0 ? "" : z.ToString();
+            
+            // не выводим дробную часть только в случае "Z"
             string outFraction = rightNum == 0 ? "" : rightNum + ":" + Denominator;
 
             return sign + outBase + dot + outFraction;
@@ -57,25 +63,24 @@ namespace lab2
         public static bool TryParse(string input, out Rational result)
         {
             result = new Rational();
+            if (input.LastIndexOf('-') > 0)
+            {
+                return false;
+            }
+           
             string[] fullNumber = input.Split('.');
             string stringZ, stringFraction;
             
             // если ввели целое число
-            if (fullNumber.Length == 1 && !fullNumber[0].Contains(":"))
+            if (fullNumber[0] == input && !fullNumber[0].Contains(":"))
             {
                 result.Denominator = 1;
                 try
                 {
                     result.Numerator = int.Parse(fullNumber[0]);
                 }
-                catch (FormatException)
+                catch (Exception)
                 {
-                    Console.WriteLine(RationalOperationException.FormatExceptionMessage);
-                    return false;
-                }
-                catch (OverflowException)
-                {
-                    Console.WriteLine("Введено слишком большое число! Попробуйте меньше, чем " + int.MaxValue);
                     return false;
                 }
 
@@ -103,62 +108,38 @@ namespace lab2
                 int numerator = int.Parse(fraction[0]);
                 int denumerator = int.Parse(fraction[1]);
                 int sign = z >= 0 && stringZ[0] != '-' ? 1 : -1;
-
-                if ((stringZ[0] != '+' || stringZ[0] == '-') && stringFraction[0] == '-' || denumerator < 0)
-                {
-                    Console.WriteLine("Ставить минус можно только в начале");
-                    return false;
-                }
-
                 result.Denominator = denumerator;
                 result.Numerator = z * denumerator + sign * numerator;
 
                 return true;
             }
-            catch (IndexOutOfRangeException)
+            catch (Exception)
             {
-                Console.WriteLine(RationalOperationException.FormatExceptionMessage);
-                return false;
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine(RationalOperationException.FormatExceptionMessage);
-                return false;
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine("Целая часть, числитель и знаменатель не должны быть больше чем " + int.MaxValue);
                 return false;
             }
         }
         
         public static Rational operator +(Rational x, Rational y)
         {
-            Rational result = new Rational();
-            if (y.Denominator != x.Denominator)
+            Rational result = new Rational
             {
-                int cDenominator = x.Denominator;
-                x.Denominator *= cDenominator;
-                x.Numerator *= y.Denominator;
-                y.Denominator *= cDenominator;
-                y.Numerator *= cDenominator;
-                result.Denominator = y.Denominator;
-            }
-            else
-            {
-                result.Denominator = y.Denominator;
-            }
-            result.Numerator = y.Numerator + x.Numerator;
+                Numerator = x.Numerator * y.Denominator + y.Numerator * x.Denominator,
+                Denominator = x.Denominator * y.Denominator
+            };
             result.Even();
+            
             return result;
         }
 
         public static Rational operator *(Rational x, Rational y)
         {
-            Rational result = new Rational();
-            result.Denominator = x.Denominator * y.Denominator;
-            result.Numerator = x.Numerator * y. Numerator;
+            Rational result = new Rational
+            {
+                Denominator = x.Denominator * y.Denominator,
+                Numerator = x.Numerator * y.Numerator
+            };
             result.Even();
+            
             return result;
         }
 
@@ -191,9 +172,12 @@ namespace lab2
         // рациональное число с противоположным знаком
         private Rational Negate()
         {
-            Rational negate = new Rational();
-            negate.Numerator = 0 - Numerator;
-            negate.Denominator = Denominator;
+            Rational negate = new Rational
+            {
+                Numerator = -Numerator,
+                Denominator = Denominator
+            };
+            
             return negate;
         }
 
@@ -201,10 +185,11 @@ namespace lab2
         {
             number1 = Math.Abs(number1);
             number2 = Math.Abs(number2);
+            
             return number2 == 0 ? number1 : getBiggestDivider(number2, number1 % number2);
         }
 
-        // приведение к правеильной дроби
+        // приведение к правильной дроби
         private void Even()
         {
             var divider = getBiggestDivider(Numerator, Denominator);
@@ -219,7 +204,7 @@ namespace lab2
             }
         }
 
-        public static explicit operator Rational(int x)
+        public static implicit operator Rational(int x)
         {
             return new Rational
             {
