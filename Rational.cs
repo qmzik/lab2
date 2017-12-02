@@ -10,9 +10,9 @@ namespace lab2
 {
     public class Rational
     {
-        public int Numerator { get; set; }
+        public int Numerator { get; private set; }
 
-        public int Denominator { get; set; }
+        public int Denominator { get; private set; }
         
         public int Base
         {
@@ -34,30 +34,15 @@ namespace lab2
 
         public override string ToString()
         {
-            int rightNum;
-            try
+            if (Fraction.Numerator == 0)
             {
-                rightNum = Math.Abs(Numerator) % Denominator;
+                return Base.ToString();
             }
-            catch (DivideByZeroException)
+            if (Base == 0)
             {
-                throw new RationalOperationException("Делить на ноль нельзя");
-                
+                return string.Format("{0}:{1}", Fraction.Numerator, Fraction.Denominator);
             }
-
-            int z = Math.Abs(Base);
-            string sign = Numerator < 0 ? "-" : "";
-            
-            // ставим точку только в случае "Z.N:M"
-            string dot = z != 0 && rightNum != 0 ? "." : "";
-            
-            // не выводим целую часть только в случае "N:M"
-            string outBase = z == 0 && rightNum != 0 ? "" : z.ToString();
-            
-            // не выводим дробную часть только в случае "Z"
-            string outFraction = rightNum == 0 ? "" : rightNum + ":" + Denominator;
-
-            return sign + outBase + dot + outFraction;
+            return string.Format("{0}.{1}:{2}", Base, Math.Abs(Fraction.Numerator), Fraction.Denominator);
         }
 
         public static bool TryParse(string input, out Rational result)
@@ -69,10 +54,14 @@ namespace lab2
             }
            
             string[] fullNumber = input.Split('.');
-            string stringZ, stringFraction;
+
+            if (fullNumber.Length > 2)
+            {
+                return false;
+            }
             
             // если ввели целое число
-            if (fullNumber[0] == input && !fullNumber[0].Contains(":"))
+            if (fullNumber.Length == 1 && !fullNumber[0].Contains(":"))
             {
                 result.Denominator = 1;
                 try
@@ -88,29 +77,38 @@ namespace lab2
             }
             
             // Если нет целой части
-            if (fullNumber[0] == input)
+            string[] fraction;
+            if (fullNumber.Length == 1)
             {
-                stringZ = "+0";
-                stringFraction = input;
+                try
+                {
+                    fraction = fullNumber[0].Split(':');
+                    result.Numerator = int.Parse(fraction[0]);
+                    result.Denominator = int.Parse(fraction[1]);
+                
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
-            else
+
+            fraction = fullNumber[1].Split(':');
+
+            if (fraction.Length > 2)
             {
-                stringZ = fullNumber[0];
-                stringFraction = fullNumber[1];
+                return false;
             }
             
-            string[] fraction = stringFraction.Split(':');
-
             try
-            {
-
-                int z = int.Parse(stringZ);
+            {   
+                int z = int.Parse(fullNumber[0]);
                 int numerator = int.Parse(fraction[0]);
                 int denumerator = int.Parse(fraction[1]);
-                int sign = z >= 0 && stringZ[0] != '-' ? 1 : -1;
+                int sign = z >= 0 ? 1 : -1;
                 result.Denominator = denumerator;
                 result.Numerator = z * denumerator + sign * numerator;
-
                 return true;
             }
             catch (Exception)
@@ -147,19 +145,15 @@ namespace lab2
         {
             if (y.Numerator == 0)
             {
-                throw new RationalOperationException("Делить на ноль нельзя");
+                throw new DivideByZeroException();
             }
-            Rational result = new Rational();
-            try
+            Rational result = new Rational
             {
-                result.Numerator = x.Numerator * y.Denominator;
-                result.Denominator = x.Denominator * y.Numerator;
-                result.Even();
-            }
-            catch (DivideByZeroException )
-            {
-                throw new RationalOperationException("Делить на ноль нельзя");
-            }
+                Numerator = x.Numerator * y.Denominator,
+                Denominator = x.Denominator * y.Numerator
+            };
+
+            result.Even();
 
             return result;
         }
@@ -181,27 +175,21 @@ namespace lab2
             return negate;
         }
 
-        private int getBiggestDivider(int number1, int number2)
+        private int GetBiggestDivider(int number1, int number2)
         {
             number1 = Math.Abs(number1);
             number2 = Math.Abs(number2);
             
-            return number2 == 0 ? number1 : getBiggestDivider(number2, number1 % number2);
+            return number2 == 0 ? number1 : GetBiggestDivider(number2, number1 % number2);
         }
 
         // приведение к правильной дроби
         private void Even()
         {
-            var divider = getBiggestDivider(Numerator, Denominator);
-            try
-            {
-                Numerator /= divider;
-                Denominator /= divider;
-            }
-            catch (DivideByZeroException)
-            {
-                throw new RationalOperationException("Делить на ноль нельзя");
-            }
+            var divider = GetBiggestDivider(Numerator, Denominator);
+
+            Numerator /= divider;
+            Denominator /= divider;
         }
 
         public static implicit operator Rational(int x)

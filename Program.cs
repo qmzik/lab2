@@ -37,67 +37,59 @@ namespace lab2
                 Rational first;
                 Rational second;
 
-                try
+                bool isFirstCorrect = Rational.TryParse(receivedCommands[1], out first);
+                bool isSecondCorrect = Rational.TryParse(receivedCommands[2], out second);
+                if (!isFirstCorrect && !isSecondCorrect)
                 {
-                    bool isFirstCorrect = Rational.TryParse(receivedCommands[1], out first);
-                    bool isSecondCorrect = Rational.TryParse(receivedCommands[2], out second);
-                    if (!isFirstCorrect && !isSecondCorrect)
-                    {
-                        Console.WriteLine("Числа введенены в неверном формате, уточните формат ввода командой help");
-                        continue;
-                    }
-                    
-                    if (!isFirstCorrect)
-                    {
-                        Console.WriteLine("Число " + receivedCommands[1] +
-                                          " введенено в неверном формате, уточните формат ввода командой help");
-                        continue;
-                    }
-
-                    if (!isSecondCorrect)
-                    {
-                        Console.WriteLine("Число " + receivedCommands[2] +
-                                          " введенено в неверном формате, уточните формат ввода командой help");
-                        continue;
-                    }
+                    Console.WriteLine("Числа введенены в неверном формате, уточните формат ввода командой help");
+                    continue;
                 }
-
-                catch (IndexOutOfRangeException)
+                
+                if (!isFirstCorrect)
                 {
-                    Console.WriteLine("Неверный формат ввода, введите <команда> <рациональное число> <рациональное число>");
+                    Console.WriteLine("Число " + receivedCommands[1] +
+                                      " введенено в неверном формате, уточните формат ввода командой help");
                     continue;
                 }
 
-                try
+                if (!isSecondCorrect)
                 {
-                    Rational result = new Rational();
-                    switch (receivedCommands[0])
-                    {
-                        case Commands.Add:
-                            result = first + second;
-                            break;
+                    Console.WriteLine("Число " + receivedCommands[2] +
+                                      " введенено в неверном формате, уточните формат ввода командой help");
+                    continue;
+                }
+
+                Rational result = new Rational();
+                switch (receivedCommands[0])
+                {
+                    case Commands.Add:
+                        result = first + second;
+                        break;
+                
+                    case Commands.Sub:
+                        result = first - second;
+                        break;
                     
-                        case Commands.Sub:
-                            result = first - second;
-                            break;
-                        
-                        case Commands.Mul:
-                            result = first * second;
-                            break;
-                        
-                        case Commands.Div:
+                    case Commands.Mul:
+                        result = first * second;
+                        break;
+                    
+                    case Commands.Div:
+                        try
+                        {
                             result = first / second;
-                            break;
-                        default:
-                            Console.WriteLine("Вы ввели некоректную команду");
+                        }
+                        catch (DivideByZeroException)
+                        {
+                            Console.WriteLine("Делить на ноль нельзя");
                             continue;
-                    }
-                    Console.WriteLine(result);
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("Вы ввели некоректную команду");
+                        continue;
                 }
-                catch (RationalOperationException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                Console.WriteLine(result);
             }
             
         }
