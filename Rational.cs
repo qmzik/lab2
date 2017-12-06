@@ -77,12 +77,11 @@ namespace lab2
             }
             
             // Если нет целой части
-            string[] fraction;
             if (fullNumber.Length == 1)
             {
                 try
                 {
-                    fraction = fullNumber[0].Split(':');
+                    var fraction = fullNumber[0].Split(':');
                     result.Numerator = int.Parse(fraction[0]);
                     result.Denominator = int.Parse(fraction[1]);
                 
@@ -94,15 +93,15 @@ namespace lab2
                 }
             }
 
-            fraction = fullNumber[1].Split(':');
-
-            if (fraction.Length > 2)
-            {
-                return false;
-            }
             
             try
             {   
+                var fraction = fullNumber[1].Split(':');
+
+                if (fraction.Length > 2)
+                {
+                    return false;
+                }
                 int z = int.Parse(fullNumber[0]);
                 int numerator = int.Parse(fraction[0]);
                 int denumerator = int.Parse(fraction[1]);
@@ -125,7 +124,6 @@ namespace lab2
                 Denominator = x.Denominator * y.Denominator
             };
             result.Even();
-            
             return result;
         }
 
@@ -187,7 +185,6 @@ namespace lab2
         private void Even()
         {
             var divider = GetBiggestDivider(Numerator, Denominator);
-
             Numerator /= divider;
             Denominator /= divider;
         }
